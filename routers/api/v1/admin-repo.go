@@ -30,6 +30,7 @@ func GetPageStartIdx(c *gin.Context) int {
 
 
 func AdminListRepos(c *gin.Context) {
+	fmt.Printf("in AdminListRepos\n")
 	data := make(map[string]interface{})
 	data["repo_list"] = models.ListRepos(GetPageStartIdx(c), setting.PageSize, make(map[string]interface{}))
 	c.JSON(http.StatusOK, data)

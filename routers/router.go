@@ -6,12 +6,14 @@ import (
 	// "net/http"
 	// "strings"
 
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 
 	// "github.com/gin-contrib/logger"
@@ -34,12 +36,50 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(gin.Logger())
 	r.Use(cors.Default())
-	r.LoadHTMLGlob("templates/*")
-	
+
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("mysession", store))
+	// r.Use(static.Serve("/", static.LocalFile("./frontend/build", true)))
+	// // r.Use(static.Serve("/admin", static.LocalFile("./frontend/build", true)))
+	// r.Use(static.Serve("/admin", static.LocalFile("./frontend/build", true)))
+	// r.StaticFile("/", "./frontend/build")
+	// r.LoadHTMLGlob("frontend/build/index.html")
+	// r.LoadHTMLGlob("frontend/build/index.html")
+	homeView := r.Group("/")
+	homeView.Use(static.Serve("/", static.LocalFile("./frontend/build", true)))
+	{
+		homeView.GET("/", func(c *gin.Context) {})  // fake view
+		homeView.GET("/login", loginGET)
+	}
 
-	r.GET("/login", loginGET)
+	adminView := r.Group("/admin")
+	adminView.Use(static.Serve("/admin", static.LocalFile("./frontend/build", true)))
+	adminView.Use(AuthRequired)
+	{
+		adminView.GET("/", func(c *gin.Context) {})
+	}
+	// r.GET("/admin", func(c *gin.Context) {
+	// 	session := sessions.Default(c)
+	// 	user := session.Get(userkey)
+	// 	fmt.Printf("in AuthRequired")
+	
+	// 	if user == nil {
+	// 		// c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+	// 		// 	"error": "unauthorized",
+	// 		// })
+	// 		c.Redirect(http.StatusFound, "/login")
+	// 		return
+	// 	}
+	// 	c.HTML(http.StatusOK, "./frontend/build/index.html", "")
+	// })
+	r.Static("/static", "./frontend/build/static")
+	// staticAdminServe := static.Serve("/admin", static.LocalFile("./frontend/build", true))
+	// staticAdminServeGroup := r.Group("/", staticAdminServe)
+	// staticAdminServeGroup.Use(AuthRequired)
+
+	r.LoadHTMLGlob("templates/*")
+
+	
 	r.POST("/login", loginPOST)
 	r.GET("/logout", logout)
 	// admin := r.Group("/admin")
@@ -50,7 +90,7 @@ func InitRouter() *gin.Engine {
 	// }
 
 	apiv1admin := r.Group("/api/v1/admin")
-	apiv1admin.Use(AuthRequired)
+	apiv1admin.Use(APIAdminAuthRequired)
 	{
 		apiv1admin.GET("/repos", v1.AdminListRepos)
 		apiv1admin.POST("/repos", v1.AdminAddRepo)
@@ -76,9 +116,28 @@ func InitRouter() *gin.Engine {
 	return r
 }
 
+func APIAdminAuthRequired(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get(userkey)
+	fmt.Printf("in AuthRequired")
+	
+	if user == nil {
+		// c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+		// 	"error": "unauthorized",
+		// })
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
+		return
+	}
+	c.Next()
+}
+
 func AuthRequired(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(userkey)
+	fmt.Printf("in AuthRequired")
+
 	if user == nil {
 		// c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 		// 	"error": "unauthorized",
