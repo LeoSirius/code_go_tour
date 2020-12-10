@@ -66,11 +66,6 @@ class Home extends React.Component{
         fileContent: newContent,
         toc: toc,
       })
-      // api.getGithubMarkdownRendered(res.data.content).then(res => {
-      //   this.setState({
-      //     fileContent: res.data,
-      //   })
-      // })
     });
   }
 
