@@ -23,17 +23,9 @@ class MyContent extends React.Component {
 
   constructor(props) {
     super(props);
-    // this.state = {
-    //   fileContent: '',
-    // }
   }
 
   componentDidMount() {
-    // api.getGithubMarkdownRendered(this.props.fileContent).then(res => {
-    //   this.setState({
-    //     fileContent: res.data,
-    //   })
-    // })
   }
 
   flatten = (text, child) => {
@@ -79,7 +71,6 @@ class MyContent extends React.Component {
           }
         }}
       />
-      {/* {fileContent} */}
     </Content>
     )
   }

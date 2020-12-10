@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Layout, Menu } from 'antd';
 import Home from './page/home';
+import Login from './page/login';
 
 import Admin from './page/admin/admin';
 
@@ -28,6 +28,7 @@ class App extends React.Component {
     switch (this.state.route) {
       case '/': Child = Home; break;
       case '/admin': Child = Admin; break;
+      case '/login': Child = Login; break;
       default:      Child = Home;
     }
 
