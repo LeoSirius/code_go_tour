@@ -26,7 +26,8 @@ func init() {
 	fmt.Println("in models init\n\n")
 	var (
 		err error
-		dbName, user, password, host, tablePrefix string
+		dbName, user, password, host string
+		tablePrefix string
 	)
 	sec, err := setting.Cfg.GetSection("database")
 	if err != nil {
@@ -42,6 +43,7 @@ func init() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		user, password, host, dbName,
 	)
+	
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix: tablePrefix,
@@ -56,17 +58,10 @@ func init() {
 			  },
 		),
 	})
+	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&Repo{})
 	if err != nil {
 		log.Fatalf("gorm open failed: %v", err)
 	}
-
-	// gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-	// 	return tablePrefix + defaultTableName;
-	// }
-	// db.SingularTable(true)
-	// sqlDB.LogMode(true)
-	// sqlDB.SetMaxIdleConns(10)
-	// sqlDB.SetMaxOpenConns(100)
 	
 }
 

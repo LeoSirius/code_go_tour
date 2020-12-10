@@ -39,55 +39,25 @@ func InitRouter() *gin.Engine {
 
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("mysession", store))
-	// r.Use(static.Serve("/", static.LocalFile("./frontend/build", true)))
-	// // r.Use(static.Serve("/admin", static.LocalFile("./frontend/build", true)))
-	// r.Use(static.Serve("/admin", static.LocalFile("./frontend/build", true)))
-	// r.StaticFile("/", "./frontend/build")
-	// r.LoadHTMLGlob("frontend/build/index.html")
-	// r.LoadHTMLGlob("frontend/build/index.html")
+
 	homeView := r.Group("/")
 	homeView.Use(static.Serve("/", static.LocalFile("./frontend/build", true)))
 	{
 		homeView.GET("/", func(c *gin.Context) {})  // fake view
 		homeView.GET("/login", loginGET)
+		homeView.POST("/login", loginPOST)
+		homeView.GET("/logout", logout)
 	}
 
 	adminView := r.Group("/admin")
-	adminView.Use(static.Serve("/admin", static.LocalFile("./frontend/build", true)))
 	adminView.Use(AuthRequired)
+	adminView.Use(static.Serve("/admin", static.LocalFile("./frontend/build", true)))
 	{
-		adminView.GET("/", func(c *gin.Context) {})
+		adminView.GET("", func(c *gin.Context) {})
 	}
-	// r.GET("/admin", func(c *gin.Context) {
-	// 	session := sessions.Default(c)
-	// 	user := session.Get(userkey)
-	// 	fmt.Printf("in AuthRequired")
-	
-	// 	if user == nil {
-	// 		// c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-	// 		// 	"error": "unauthorized",
-	// 		// })
-	// 		c.Redirect(http.StatusFound, "/login")
-	// 		return
-	// 	}
-	// 	c.HTML(http.StatusOK, "./frontend/build/index.html", "")
-	// })
 	r.Static("/static", "./frontend/build/static")
-	// staticAdminServe := static.Serve("/admin", static.LocalFile("./frontend/build", true))
-	// staticAdminServeGroup := r.Group("/", staticAdminServe)
-	// staticAdminServeGroup.Use(AuthRequired)
-
 	r.LoadHTMLGlob("templates/*")
 
-	
-	r.POST("/login", loginPOST)
-	r.GET("/logout", logout)
-	// admin := r.Group("/admin")
-	// admin.Use(AuthRequired)
-	// {
-	// 	admin.GET("/me", me)
-	// 	admin.GET("/status", status)
-	// }
 
 	apiv1admin := r.Group("/api/v1/admin")
 	apiv1admin.Use(APIAdminAuthRequired)
@@ -119,7 +89,7 @@ func InitRouter() *gin.Engine {
 func APIAdminAuthRequired(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(userkey)
-	fmt.Printf("in AuthRequired")
+	fmt.Printf("in APIAdminAuthRequired\n")
 	
 	if user == nil {
 		// c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
@@ -136,13 +106,9 @@ func APIAdminAuthRequired(c *gin.Context) {
 func AuthRequired(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(userkey)
-	fmt.Printf("in AuthRequired")
-
+	fullPath := c.FullPath()
 	if user == nil {
-		// c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-		// 	"error": "unauthorized",
-		// })
-		c.Redirect(http.StatusFound, "/login")
+		c.Redirect(http.StatusFound, "/login?next="+fullPath)
 		return
 	}
 	c.Next()
@@ -158,6 +124,8 @@ func loginPOST(c *gin.Context) {
 	session := sessions.Default(c)
 	username := c.PostForm("username")
 	password := c.PostForm("password")
+	nextURL := c.Query("next")
+	fmt.Printf("nextURL = %v\n", nextURL)
 
 	if strings.Trim(username, " ") == "" || strings.Trim(password, " ") == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -181,9 +149,14 @@ func loginPOST(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "user authentified",
-	})
+	if nextURL != "" {
+		c.Redirect(http.StatusFound, nextURL)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "")
+	return
+
 }
 
 func logout (c *gin.Context) {
@@ -203,14 +176,4 @@ func logout (c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
-}
-
-func me(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get(userkey)
-	c.JSON(http.StatusOK, gin.H{"user": user})
-}
-
-func status(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "You are logged in"})
 }
