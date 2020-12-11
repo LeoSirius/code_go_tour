@@ -22,7 +22,12 @@ const Login = () => {
     let searchParams = new URLSearchParams(window.location.search);
     let next = searchParams.get('next');
     const { username, password } = values;
-    api.login(username, password, next);
+    api.login(username, password, next).then(res => {
+      console.log('res = ', res)
+      console.log('res.data = ', res.data)
+    }).catch(e => {
+
+    });
   };
 
   const onFinishFailed = (errorInfo) => {
