@@ -2,8 +2,7 @@ import React from 'react';
 
 import { Layout, Menu } from 'antd';
 
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const { Header } = Layout;
 
 
 class MyHeader extends React.Component {

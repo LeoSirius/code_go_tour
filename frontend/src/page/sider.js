@@ -1,8 +1,6 @@
 import React from 'react';
 
 import { Layout, Menu, Breadcrumb } from 'antd';
-import { FolderFilled } from '@ant-design/icons';
-import api from '../api';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;

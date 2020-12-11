@@ -1,11 +1,8 @@
 import React from 'react';
 
 import { Layout, Menu, Anchor } from 'antd';
-import { FolderFilled } from '@ant-design/icons';
-import api from '../api';
 
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const { Sider } = Layout;
 const { Link } = Anchor;
 
 class TOC extends React.Component {

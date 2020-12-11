@@ -1,13 +1,11 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
-import { Layout, Menu, Breadcrumb } from 'antd';
-import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
 // import remark from 'react-markdown';
 // import toc from 'remark-toc';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
-import {a11yDark} from 'react-syntax-highlighter/dist/esm/styles/prism'
-import api from '../api';
+import {a11yDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // var remark = require('remark');
 // var toc = require('remark-toc');
