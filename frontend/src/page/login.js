@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import  { Redirect } from 'react-router-dom'
 import { Form, Input, Button } from 'antd';
 
 import api from '../api';
@@ -18,13 +20,14 @@ const tailLayout = {
 };
 
 const Login = () => {
+  const [authed, setAuthed] = useState(false);
+
   const onFinish = (values) => {
     let searchParams = new URLSearchParams(window.location.search);
     let next = searchParams.get('next');
     const { username, password } = values;
     api.login(username, password, next).then(res => {
-      console.log('res = ', res)
-      console.log('res.data = ', res.data)
+      setAuthed(true);
     }).catch(e => {
 
     });
@@ -33,6 +36,10 @@ const Login = () => {
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
+
+  if (authed) {
+    return <Redirect to={'/admin'}/>
+  }
 
   return (
     <Form
