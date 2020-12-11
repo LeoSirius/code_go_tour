@@ -19,9 +19,10 @@ const tailLayout = {
 
 const Login = () => {
   const onFinish = (values) => {
-    console.log('Success:', values);
+    let searchParams = new URLSearchParams(window.location.search);
+    let next = searchParams.get('next');
     const { username, password } = values;
-    api.login(username, password);
+    api.login(username, password, next);
   };
 
   const onFinishFailed = (errorInfo) => {

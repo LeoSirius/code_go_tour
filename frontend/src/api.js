@@ -5,8 +5,8 @@ const baseURL = 'http://39.106.229.224'
 const axiosInstance = axios.create();
 const api = {
 
-  login: (username, password) => {
-    const url = baseURL + '/login2';
+  login: (username, password, next) => {
+    const url = baseURL + '/login2?next=' + next;
     let form = new FormData();
     form.append('username', username);
     form.append('password', password);
