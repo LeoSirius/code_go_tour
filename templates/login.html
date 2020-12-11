@@ -1,11 +1,26 @@
 <html>
 
+<head>
+
+<style>
+
+</style>
+</head>
 <body>
 
-  <form method="POST" action="/login">
-    <input name="username" type="text"/>
-    <input name="password" type="text"/>
+  <form method="POST" action="/login?next=admin">
+    <div>
+      <label for="username">Username</label>
+      <input name="username" type="text"/>
+    </div>
+
+    <div>
+      <label for="password">Password</label>
+      <input name="password" type="text"/>
+    </div>
+    
     <input type="submit"/>
   </form>
 </body>
+
 </html>

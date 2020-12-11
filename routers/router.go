@@ -40,15 +40,14 @@ func InitRouter() *gin.Engine {
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("mysession", store))
 
+	r.GET("/login", loginGET)
+	r.POST("/login", loginPOST)
+
 	homeView := r.Group("/")
 	homeView.Use(static.Serve("/", static.LocalFile("./frontend/build", true)))  // index.html will display by default
-	homeView.Use(static.Serve("/login", static.LocalFile("./frontend/build", true)))  // index.html will display by default
 
 	{
 		homeView.GET("/", func(c *gin.Context) {})  // fake view
-		homeView.GET("/login", func(c *gin.Context) {})
-		homeView.POST("/login2", loginPOST)
-		homeView.GET("/logout", logout)
 	}
 
 	adminView := r.Group("/admin")
