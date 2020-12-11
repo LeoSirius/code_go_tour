@@ -6,7 +6,7 @@ const axiosInstance = axios.create();
 const api = {
 
   login: (username, password) => {
-    const url = baseURL + '/login';
+    const url = baseURL + '/login2';
     let form = new FormData();
     form.append('username', username);
     form.append('password', password);
